@@ -1,0 +1,153 @@
+{% extends 'auth_app/base.html' %}
+{% load static %}
+
+
+{% block main %}
+
+<div class="container">
+    <h2>Audio Upload Form</h2>
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="audio">Select Audio File(s)</label>
+          <input id = "fileInput" class="form-control form-control-lg" accept="audio/*" type="file" name="photos[]" multiple />
+        </div>
+        <div id="selected-files"></div>
+        <button type="button" id="addButton" class="btn btn-primary">Add</button>
+        <button type="button" id="submitButton" class="btn btn-primary">Upload</button>
+      <!-- </form> -->
+      <p id="error" style="color: red;"> </p>
+      <div id="audioContainer"></div>
+    </div>
+  
+    <script>
+// Get the form and elements
+    // var form = document.getElementById('myForm');
+    var fileInput = document.getElementById('fileInput');
+    var submitBtn = document.getElementById('addButton');
+    var formData = new FormData();
+    var audioContainer = document.getElementById('audioContainer');
+  
+    formData.set('action', '');
+    // Add event listener to submit button
+    submitBtn.addEventListener('click', function() {
+      
+
+      // Get the selected files from the file input
+      var files = fileInput.files;
+
+      
+
+      // Add each file to the FormData object
+      for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        var errorElement = document.getElementById("error");
+        errorElement.textContent = ""
+
+        getAudioDuration(file, function(duration) {
+        // Check if the duration is greater than 10 minutes
+        if (duration > 600) {
+          console.log('File is too large. Maximum duration is 10 minutes.');
+          // Display the error message on the page or perform other actions
+
+          // Create an error element
+          
+          errorElement.textContent = file.name +  'File duration is too long. Maximum duration allowed is 10 minutes.';
+          
+      // Append the error element to the audioContainer or any other desired location on the page
+          var audioContainer = document.getElementById('audioContainer');
+          audioContainer.appendChild(errorElement);
+
+        } else {
+          // Perform your desired actions with the duration
+          console.log('Audio duration:', duration);
+          var audioElement = document.createElement('audio');
+          audioElement.controls = true;
+          console.log(file)
+          
+          var sourceElement = document.createElement('source');
+          sourceElement.src = URL.createObjectURL(file);
+          sourceElement.type = file.type;
+
+          
+          var fileText = document.createElement('h4');
+          fileText.textContent = file.name;
+
+          var audioContainer = document.getElementById('audioContainer');
+          audioElement.appendChild(sourceElement);
+          
+          audioContainer.appendChild(fileText);
+          
+          audioContainer.appendChild(audioElement);
+
+          audioContainer.appendChild(document.createElement('br'));
+
+          
+          
+          formData.append('files', file);
+        }
+    });
+        
+        
+        
+      }
+
+  
+
+    
+    });
+
+
+
+
+    // Function to get audio duration
+function getAudioDuration(file, callback) {
+  var audioContext = new AudioContext();
+
+  // Create a FileReader to read the file
+  var reader = new FileReader();
+  reader.onload = function() {
+    var arrayBuffer = reader.result;
+    audioContext.decodeAudioData(arrayBuffer, function(buffer) {
+      var duration = buffer.duration;
+
+      // Call the callback function with the duration
+      callback(duration);
+    });
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+
+
+
+
+document.getElementById('submitButton').addEventListener('click', function() {
+  // Create a new XMLHttpRequest object
+    var xhr = new XMLHttpRequest();
+
+    // Open a POST request to your backend endpoint
+    xhr.open('POST', '/user/upload_song', true);
+
+
+    // Set the enctype header to 'multipart/form-data'
+  xhr.setRequestHeader('enctype', 'multipart/form-data');
+
+  // Send the FormData object as the request body
+  xhr.onload = function() {
+  if (xhr.status === 200) {
+    // Successful response, redirect to the desired URL
+    window.location.href = '/user/songs';
+  } else {
+    // Handle error or other response statuses
+    console.error('Error:', xhr.status);
+  }
+};
+
+// Send the FormData object as the request body
+xhr.send(formData);
+});
+    
+</script>
+
+
+{% endblock main %}

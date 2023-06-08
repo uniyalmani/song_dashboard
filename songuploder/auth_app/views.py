@@ -42,7 +42,7 @@ class SignUp(APIView):
         if serializer.is_valid(raise_exception=True):
             user = serializer.save()
             token = get_tokens_for_user(user)
-            response = HttpResponseRedirect('/user/uplod_image')
+            response = HttpResponseRedirect('/user/songs')
             response['Authorization'] = 'Bearer ' + str(token["refresh"])
             response.set_cookie('jwt', str(token["access"]))
             return response
@@ -67,7 +67,7 @@ class Login(APIView):
             
             if user is not None:
                 token = get_tokens_for_user(user)
-                response = HttpResponseRedirect('/user/uplod_image')
+                response = HttpResponseRedirect('/user/upload_song')
                 response.set_cookie('jwt', str(token["access"]))
                 return response
             

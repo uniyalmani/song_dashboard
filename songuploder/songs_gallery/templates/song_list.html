@@ -1,0 +1,27 @@
+{% extends 'auth_app/base.html' %}
+{% load static %}
+
+
+{% block main %}
+
+
+    
+<h1>List of Audio Files</h1>
+<ul>
+  {% for audio_file in audio_files %}
+  <li>
+    <p>{{ audio_file.audio_file.name }}</p>
+    <audio controls>
+      <source src="{{ audio_file.audio_file.url }}" type="{{ audio_file.audio_file.content_type }}">
+      Your browser does not support the audio element.
+    </audio>
+   
+  </li>
+  {% endfor %}
+</ul>
+
+
+
+
+
+{% endblock main %}

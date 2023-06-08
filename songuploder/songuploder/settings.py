@@ -9,7 +9,8 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+from datetime import timedelta
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'auth_app',
+    'songs_gallery',
 ]
 
 MIDDLEWARE = [
@@ -70,13 +72,16 @@ REST_FRAMEWORK = {
     )
 }
 
-from datetime import timedelta
+
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 # Set your JWT_SECRET_KEY
 SECRET_KEY = 'your-secret-key'
-aws_access_key_id=""
-aws_secret_access_key=""
-bucket_name="csvbucketloop"
+
+
+
 # Configure Simple JWT
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
@@ -88,6 +93,12 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('JWT',),  # We will look for the token in the cookie instead of the header
 }
 
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '[::1]',
+    '0.0.0.0',
+]
 
 
 TEMPLATES = [
