@@ -1,6 +1,7 @@
 # song_dashboard
 
 # docker-compose up -> for running app locally
+# token based authentication
 
 * http://0.0.0.0:8000/auth/login -> login 
 * http://0.0.0.0:8000/auth/signup -> signup
