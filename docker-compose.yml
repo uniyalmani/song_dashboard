@@ -1,0 +1,20 @@
+version: '3.9'
+
+services:
+
+
+  songuploder:
+    container_name: song_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+ 
+    environment:
+      - SECRET_KEY1="qwertyuiopasdfghjklzxcvbnmgenratedfjsdfjs"
+
+    volumes:
+      - .:/usr/src/app
+
+    ports:  
+      - "8000:80"
+      - "5678:5678"
