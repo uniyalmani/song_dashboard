@@ -45,7 +45,7 @@ class CookieJWTAuthentication(JWTAuthentication):
         except User.DoesNotExist:
             raise AuthenticationFailed(_('User not found'))
 
-        print(user, " insdied middle wer f")
+     
         return (user, validated_token)
 
 
@@ -55,7 +55,7 @@ class CookieJWTMiddleware:
 
     def __call__(self, request):
         request.info = SimpleLazyObject(lambda: self.__class__.get_user(request))
-        print(request.user, "imsde moddfsadf jdfj", request.info)
+        
         response = self.get_response(request)
         return response
 
@@ -67,13 +67,13 @@ class CookieJWTMiddleware:
             jwt_token = request.COOKIES.get('jwt')
             if jwt_token:
                 user, validated_token = CookieJWTAuthentication().authenticate(request)
-                print(user, validated_token, "/////////")
+                
                 if user:
                     data["valid"] = True
                     data["user"] = user
         except AuthenticationFailed as e:
-            print(e, "middlkll")
+            pass
         except Exception as e:
-            print(e, "middlkll")
+            pass
         
         return data

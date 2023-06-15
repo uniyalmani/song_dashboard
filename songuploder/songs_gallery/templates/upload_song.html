@@ -219,7 +219,6 @@ xhr.send(formData);
 
   xsr2.onload = function() {
     if (xsr2.status === 200) {
-      var formData = new FormData();
       formData.append('emails', newEmail);
 
       console.log("Email found");

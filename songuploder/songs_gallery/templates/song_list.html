@@ -6,19 +6,21 @@
 
 
     
-<h1>List of Audio Files</h1>
+<h1 class="text-center mt-5">Audio Files</h1>
 <ul>
   {% for audio_file in audio_files %}
-  <li>
-    <p>{{ audio_file.audio_file.name }}</p>
-    <p>{{ audio_file.user.email }}</p>
-    <p>{{ audio_file.access_type }}</p>
-    <audio controls>
-      <source src="{{ audio_file.audio_file.url }}" type="{{ audio_file.audio_file.content_type }}">
-      Your browser does not support the audio element.
-    </audio>
-   
-  </li>
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">{{ audio_file.audio_file.name }}</h5>
+      <p class="card-text"> <B>Uploded By </B>: {{ audio_file.user.email }}</p>
+      <p class="card-text"><B>Audio Access Type</B>: {{ audio_file.access_type }}</p>
+      <audio controls>
+        <source src="{{ audio_file.audio_file.url }}" type="{{ audio_file.audio_file.content_type }}">
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+  </div>
+  <br>
   {% endfor %}
 </ul>
 

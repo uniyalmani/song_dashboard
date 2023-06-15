@@ -14,13 +14,13 @@ class UserSerializer(serializers.ModelSerializer):
 
 
     def validate(self, attrs):
-        print(attrs, "llllllllll")
+        
         password = attrs.get("password")
         confirm_password = attrs.get("confirm_password")
         if password != confirm_password:
             raise serializers.ValidationError("Password and confirm password dose not match")
         # del attrs["confirm_password"]
-        print(attrs, "llllllllll")
+       
         return attrs
     
     def create(self, validated_data):

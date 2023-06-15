@@ -13,6 +13,7 @@ from django.shortcuts import redirect
 from django.contrib import messages
 import random
 from django.db import IntegrityError
+from django.shortcuts import get_object_or_404
 # Create your views here.
 
 
@@ -38,21 +39,21 @@ class UploadSongs(APIView):
         uploaded_files = request.FILES.getlist('files')
         audio_access = request.data.get('audioAccess')
         emails = request.data.getlist('emails')
-        user_with_access = [User.objects.get(email=email) for email in emails]
+
         
-        print(emails, "these are emails ")
+        print(emails, "these are emails ", audio_access)
+        print("//////////////////////////")
         for audio_file in uploaded_files:
             user = request.info["user"]
             audio = Audio(user=user, audio_file=audio_file, access_type=audio_access)
             audio.save()
-            print(audio, "///////////////////", type(audio_access))
+            
             if audio_access == "Protected":
-                for u_w in user_with_access:
-                    try:
-                        p = ProtectedFileAccess(audio = audio, user = u_w)
-                        p.save()
-                    except IntegrityError as e:
-                        return e
+                for email in emails:
+                    other_user = get_object_or_404(User, email=email)
+                    protected_access = ProtectedFileAccess(audio = audio, user = other_user)
+                    protected_access.save()
+                    
             
 
         
@@ -117,11 +118,10 @@ def check_email(request):
     
     
     try:
-        print(email, "email")
+
         User.objects.get(email=email)
         res = JsonResponse({"exists": True}, status = 200)
-        print(res, "]]]]]]]]]]]]]]]")
-        print(res)
+
         return res
     except User.DoesNotExist:
         res = JsonResponse({"exists": False}, status = 400)
