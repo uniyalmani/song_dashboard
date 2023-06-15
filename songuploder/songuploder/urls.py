@@ -18,9 +18,11 @@ from django.urls import path
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path('auth/', include('auth_app.urls')),
     path('user/', include('songs_gallery.urls')),
     path('admin/', admin.site.urls),
+     path('', RedirectView.as_view(url='/user/home', permanent=True)),
 ] +  static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
