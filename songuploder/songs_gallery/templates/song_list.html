@@ -11,6 +11,8 @@
   {% for audio_file in audio_files %}
   <li>
     <p>{{ audio_file.audio_file.name }}</p>
+    <p>{{ audio_file.user.email }}</p>
+    <p>{{ audio_file.access_type }}</p>
     <audio controls>
       <source src="{{ audio_file.audio_file.url }}" type="{{ audio_file.audio_file.content_type }}">
       Your browser does not support the audio element.

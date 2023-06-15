@@ -7,4 +7,5 @@ urlpatterns = [
     path('songs', Songs.as_view(), name='songs'),
     path('home', home, name='home'),
     path('profile', profile, name='profile'),
+    path('check-email', check_email, name = "check_email")
 ]

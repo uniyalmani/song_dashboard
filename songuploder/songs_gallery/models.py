@@ -16,5 +16,20 @@ class UploadedSongs(models.Model):
 
 
 class Audio(models.Model):
+    ENUM_CHOICES = [
+        ('Protected', 'Protected'),
+        ('Private', 'Private'),
+        ('Public', 'Public'),
+    ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     audio_file = models.FileField(upload_to='audio/')
+    access_type = models.CharField(max_length=20, choices=ENUM_CHOICES)
+    
+
+class ProtectedFileAccess(models.Model):
+    audio = models.ForeignKey(Audio, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('audio', 'user')

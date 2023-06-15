@@ -7,6 +7,6 @@ RUN pip install  -r requirements.txt
 
 COPY . .
 
-WORKDIR /usr/src/app/imageuploder
+WORKDIR /usr/src/app/songuploder
 
 CMD ["python", "manage.py", "runserver", "0.0.0.0:80"]

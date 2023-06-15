@@ -7,20 +7,47 @@
 <div class="container">
     <h2>Audio Upload Form</h2>
         {% csrf_token %}
-        <div class="form-group">
+    <div class="form-group">
           <label for="audio">Select Audio File(s)</label>
           <input id = "fileInput" class="form-control form-control-lg" accept="audio/*" type="file" name="photos[]" multiple />
-        </div>
-        <div id="selected-files"></div>
+    </div>
+    <div id="selected-files"></div>
         <button type="button" id="addButton" class="btn btn-primary">Add</button>
         <button type="button" id="submitButton" class="btn btn-primary">Upload</button>
       <!-- </form> -->
       <p id="error" style="color: red;"> </p>
-      <div id="audioContainer"></div>
+      <div class="d-flex flex-row align-items-center mb-4">
+        <i class="fas fa-solid fa-signs-post me-3 fa-fw"></i>
+        <div class="form-outline flex-fill mb-0">
+            <select class="mdb-select md-form colorful-select dropdown-primary"
+                name="audioAccess" id ="audioAccess">
+                <option value="Public">Public</option>
+                <option value="Private">Private</option>
+                <option value="Protected">Protected</option>
+            </select>
+            <label class="mdb-main-label">Audio Access</label>
+        </div>
     </div>
+    <div class="form-outline flex-fill mb-0" id="protected-emails">
+      <input type="email" id="emailInput" class="form-control border" name="emails[]" placeholder="Enter email addresses" />
+      <button type="button" class="btn btn-primary" id="add-email">Add Email</button>
+    </div>
+    <div class="form-outline flex-fill mb-0">
+      <div class="mdb-select md-form colorful-select dropdown-primary">
+      <select class="dropdown" id="emailDropDown">Added Email</select>
+      </div>
+      <label class="mdb-main-label" id = "emailDropDownlabel">Added Email</label>
+    </div>
+    <div id="audioContainer"></div>
+    
+</div>
   
     <script>
 // Get the form and elements
+    const select = document.getElementById("audioAccess");
+    const publicOption = select.querySelector('option[value="Public"]');
+
+    publicOption.selected = true;
     // var form = document.getElementById('myForm');
     var fileInput = document.getElementById('fileInput');
     var submitBtn = document.getElementById('addButton');
@@ -98,6 +125,12 @@
 
 
 
+const selectedOption = select.options[select.selectedIndex];
+
+var audioAccess = selectedOption.value;
+
+formData.append('audioAccess', audioAccess);
+
 
     // Function to get audio duration
 function getAudioDuration(file, callback) {
@@ -148,6 +181,67 @@ xhr.send(formData);
 });
     
 </script>
+
+
+<script>
+  // Hide the protected emails input by default
+  
+  document.getElementById("protected-emails").style.display = "none";
+  document.getElementById("emailDropDown").style.display = "none";
+  document.getElementById("emailDropDownlabel").style.display = "none";
+  // Show the protected emails input when the user selects "Protected" in the role dropdown
+  document.querySelector("select[name='audioAccess']").addEventListener("change", function() {
+    var audioAccess = event.target.value;
+
+    formData.set('audioAccess', audioAccess);
+    if (this.value === "Protected") {
+      document.getElementById("protected-emails").style.display = "block";
+      document.getElementById("emailDropDown").style.display = "block";
+      document.getElementById("emailDropDownlabel").style.display = "block";
+    } else {
+      document.getElementById("protected-emails").style.display = "none";
+      document.getElementById("emailDropDown").style.display = "none";
+      document.getElementById("emailDropDownlabel").style.display = "none";
+    }
+  });
+
+
+
+
+
+
+  document.getElementById('add-email').addEventListener('click', function() {
+  console.log("pressed add email");
+  var xsr2 = new XMLHttpRequest();
+  var newEmail = document.getElementById("emailInput").value;
+
+  xsr2.open('GET', '/user/check-email?email=' + newEmail, true);
+
+  xsr2.onload = function() {
+    if (xsr2.status === 200) {
+      var formData = new FormData();
+      formData.append('emails', newEmail);
+
+      console.log("Email found");
+      var dropdown = document.getElementById('emailDropDown');
+      var opt = document.createElement('option');
+      opt.text = newEmail;
+      dropdown.appendChild(opt);
+    } else {
+      console.error('Error:', xsr2.status);
+    }
+  };
+
+  xsr2.send();
+});
+
+
+
+
+
+
+</script>
+
 
 
 {% endblock main %}

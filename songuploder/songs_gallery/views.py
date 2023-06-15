@@ -6,11 +6,13 @@ from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.parsers import MultiPartParser
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from .models import UploadedSongs, Audio
+from .models import UploadedSongs, Audio, ProtectedFileAccess
 from auth_app.models import User
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from django.contrib import messages
+import random
+from django.db import IntegrityError
 # Create your views here.
 
 
@@ -34,10 +36,26 @@ class UploadSongs(APIView):
         
         # file = request.FILES['audio']
         uploaded_files = request.FILES.getlist('files')
+        audio_access = request.data.get('audioAccess')
+        emails = request.data.getlist('emails')
+        user_with_access = [User.objects.get(email=email) for email in emails]
+        
+        print(emails, "these are emails ")
         for audio_file in uploaded_files:
             user = request.info["user"]
-            audio = Audio(user=user, audio_file=audio_file)
+            audio = Audio(user=user, audio_file=audio_file, access_type=audio_access)
             audio.save()
+            print(audio, "///////////////////", type(audio_access))
+            if audio_access == "Protected":
+                for u_w in user_with_access:
+                    try:
+                        p = ProtectedFileAccess(audio = audio, user = u_w)
+                        p.save()
+                    except IntegrityError as e:
+                        return e
+            
+
+        
 
         data = {'message': 'success full'}
         response = JsonResponse(data)
@@ -63,12 +81,24 @@ class Songs(APIView):
         if not request.info["valid"]:
             messages.error(request, 'Invalid token. for viewing images please loging')
             return redirect('/auth/login')
+        
         user_email = request.info["user"].email
         user = User.objects.get(email=user_email)
-        audio_files = Audio.objects.filter(user=user)
+        # Filter Audio objects
+        public_audios = Audio.objects.filter(access_type='Public')
+        private_audios = Audio.objects.filter(access_type='Private', user=user)
+        protected_upload_audios = Audio.objects.filter(access_type='Protected', user=user)
+        protected_audios  = Audio.objects.filter(access_type='Protected',protectedfileaccess__user=user)
+        print("//////////////////////")
+        print("protected_audios", protected_audios, "////////////////////")
+        print("//////////////////////")
+        audio_files = public_audios | private_audios | protected_audios | protected_upload_audios
+        print(audio_files)
         context = {"audio_files": audio_files}
         return render(request, template_name="song_list.html", context=context)
     
+
+
 
 
 def home(request):
@@ -78,3 +108,25 @@ def home(request):
 
 def profile(request):
     return render(request, template_name="profile.html")
+
+
+def check_email(request):
+    email = request.GET["email"]
+
+    # Check if the email address already exists in the database
+    
+    
+    try:
+        print(email, "email")
+        User.objects.get(email=email)
+        res = JsonResponse({"exists": True}, status = 200)
+        print(res, "]]]]]]]]]]]]]]]")
+        print(res)
+        return res
+    except User.DoesNotExist:
+        res = JsonResponse({"exists": False}, status = 400)
+        return res
+
+        
+
+  
