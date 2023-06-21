@@ -4,6 +4,8 @@
 # token based authentication
 user can add multiple audio audio duration should be less then 10 min .
 for adding multiple audio select audio and click add button then select other audio and click add button .....
+audio can be private, public, protected .
+private only user can see them , protected only accessible for given user , public accessible for all.
 if user has selected protected mode then user need to add emails of other user who can excess audio.
 user can select multiple emails..
 at last click upload button.
